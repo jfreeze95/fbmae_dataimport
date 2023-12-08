@@ -12,22 +12,38 @@ import os
 import PIL
 
 from torchvision import datasets, transforms
+from torch.utils.data import Dataset, DataLoader
 
 from timm.data import create_transform
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 
+class CustomDataset(Dataset):
+    def __init__(self, inputs, targets, transform=None):
+        self.inputs = inputs
+        self.targets = targets
+        self.transform=transform
+
+    def __len__(self):
+        return len(self.inputs)
+
+    def __getitem__(self, idx):
+        input_sample = self.inputs[idx]
+        target_sample = self.targets[idx]
+        return {'input': input_sample, 'target': target_sample}
 
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
+    train_dataset = CustomDataset(X_train_tensor, y_train_tensor,transform)
+    test_dataset = CustomDataset(X_test_tensor, y_test_tensor,transform)
 
-    root = os.path.join(args.data_path, 'train' if is_train else 'val')
-    dataset = datasets.ImageFolder(root, transform=transform)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     print(dataset)
 
-    return dataset
+    return train_loader, test_loader
 
-
+        
 def build_transform(is_train, args):
     mean = IMAGENET_DEFAULT_MEAN
     std = IMAGENET_DEFAULT_STD
