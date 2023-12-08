@@ -172,8 +172,8 @@ def main(args):
 
     cudnn.benchmark = True
 
-    dataset_train = args.data_path_train #build_dataset(is_train=True, args=args)
-    dataset_val = args.data_path_val #build_dataset(is_train=False, args=args)
+    dataset_train = build_dataset(is_train=True, args=args)
+    dataset_val = build_dataset(is_train=False, args=args)
 
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()
