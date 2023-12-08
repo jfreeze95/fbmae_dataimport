@@ -10,6 +10,7 @@
 
 import os
 import PIL
+import numpy as np
 
 from torchvision import datasets, transforms
 from torch.utils.data import Dataset, DataLoader
@@ -33,13 +34,16 @@ class CustomDataset(Dataset):
 
 def build_dataset(is_train, args):
     transform = build_transform(is_train, args)
+    X_train_tensor=np.load(os.path.join(args.data_path_train,'X_train.npz')).items()[1]
+    y_train_tensor=np.load(os.path.join(args.data_path_train,'y_train.npz')).items()[1]
+    X_test_tensor=np.load(os.path.join(args.data_path_train,'X_test.npz')).items()[1]
+    y_test_tensor=np.load(os.path.join(args.data_path_train,'y_test.npz')).items()[1]
+    
     train_dataset = CustomDataset(X_train_tensor, y_train_tensor,transform)
     test_dataset = CustomDataset(X_test_tensor, y_test_tensor,transform)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
-    print(dataset)
 
     return train_loader, test_loader
 
